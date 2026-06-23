@@ -43,6 +43,29 @@ export function myMfeFactory() {
 CollageJS `CorePiece` object and can be customized with lifecycle hooks and
 default props through its options argument.
 
+### buildPiece() Options
+
+`buildPiece(Component, options)` supports the following options:
+
+1. `props`: default props merged with runtime props.
+2. `preMount`: callback invoked before the React root is created.
+3. `postUnmount`: callback invoked after unmounting the React root.
+4. `rootOptions`: options forwarded to React's `createRoot(...)`.
+
+Example:
+
+```tsx
+import { buildPiece } from "@collagejs/react";
+import { App } from "./App";
+
+export const myPieceFactory = () =>
+  buildPiece(App, {
+    rootOptions: {
+      identifierPrefix: "my-piece-",
+    },
+  });
+```
+
 ## Consuming CorePiece Objects in React
 
 Use the `Piece` component to mount any CollageJS `CorePiece` in a React app.

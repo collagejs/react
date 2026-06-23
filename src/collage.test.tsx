@@ -1,4 +1,4 @@
-import { act } from "react";
+import { act, useId } from "react";
 import type {
     CorePiece,
     MountPiece,
@@ -36,6 +36,38 @@ afterEach(() => {
 });
 
 describe("buildPieceFactory (Browser Mode)", () => {
+    it("forwards rootOptions to React createRoot", async () => {
+        function PlainComponent() {
+            const id = useId();
+            return <div id={id}>hello</div>;
+        }
+
+        const corePiece = buildPiece(PlainComponent, {
+            rootOptions: {
+                identifierPrefix: "cjs-test-",
+            },
+        });
+
+        const host = document.createElement("div");
+        document.body.append(host);
+
+        let cleanup: (() => Promise<void>) | undefined;
+
+        await act(async () => {
+            cleanup = await corePiece.mount(host);
+            await settle();
+        });
+
+        const rendered = host.querySelector("div");
+        expect(rendered).toBeInstanceOf(HTMLDivElement);
+        expect(rendered?.id).toContain("cjs-test-");
+
+        await act(async () => {
+            await cleanup?.();
+            await settle();
+        });
+    });
+
     it("passes parent-aware mountPiece through context to nested Piece", async () => {
         const childCorePiece = createProbePiece();
         const parentAwareMountPiece = vi.fn(async () => {

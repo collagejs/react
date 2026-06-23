@@ -5,6 +5,7 @@ import {
 import {
     createRoot,
     type Root,
+    type RootOptions,
 } from "react-dom/client";
 import {
     mountPiece,
@@ -25,6 +26,7 @@ export type ComponentOperationOptions<
     preMount?: (target: AcceptableTarget) => Promise<void> | void;
     postUnmount?: (target: AcceptableTarget) => Promise<void> | void;
     props?: Partial<TProps>;
+    rootOptions?: RootOptions;
 };
 
 class ReactPiece<TProps extends Record<string, any> = Record<string, any>> {
@@ -103,7 +105,7 @@ function buildPieceFactory() {
             this.target = target;
             await options?.preMount?.(target);
 
-            const root = createRoot(target);
+            const root = createRoot(target, options?.rootOptions);
             this.root = root;
 
             const {
