@@ -8,7 +8,7 @@
     "micro-frontend",
     "single-spa"
   ],
-  "homepage": "https://github.com/collagejs/react#readme",
+  "homepage": "https://collagejs.dev",
   "bugs": {
     "url": "https://github.com/collagejs/react/issues"
   },
@@ -17,7 +17,11 @@
     "url": "git+https://github.com/collagejs/react.git"
   },
   "license": "MIT",
-  "author": "José Pablo Ramírez Vargas",
+  "author": {
+    "email": "webJose@gmail.com",
+    "name": "José Pablo Ramírez Vargas",
+    "url": "https://github.com/webJose"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
