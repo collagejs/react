@@ -11,25 +11,38 @@ This is the official React package for *CollageJS*. It is used for two complemen
 
 ## Installation
 
+As a first step, create your Vite + React project:
+
 ```bash
-npm install @collagejs/react @collagejs/core react react-dom
+npm create vite@latest --template react-ts
+# OR:
+npm create vite@latest --template react-compiler-ts
 ```
+
+Now proceed to add these packages to make the project a CollageJS Piece project:
+
+```bash
+npm install @collagejs/react @collagejs/vite-css
+```
+
+This is the same for React projects that wish to expose a *CollageJS* piec and React projects that wish to consume *CollageJS* pieces.
 
 ## Creating React-Powered CorePiece Objects
 
-When building a React micro-frontend that should be mounted through *CollageJS*, wrap your root React component with `buildPiece()`.
+When building a React-powered *CollageJS* piece (micro-frontend), wrap your root React component with `buildPiece()`.
 
 ```tsx
-// mfe.tsx
+// piece.tsx
 import { buildPiece } from "@collagejs/react";
 import { cssMountFactory } from "@collagejs/vite-css/ex";
 import { App } from "./App";
 
-// Only one cssMount per file is needed.
-const cssMount = cssMountFactory("mfe");
+// Only one cssMount per entry file is needed.
+// REQUIRED:  The string here is the file's name, without extension.
+const cssMount = cssMountFactory("piece");
 
-export function myMfeFactory() {
-  const piece = buildPiece(App);
+export function myPieceFactory() {
+  const piece = buildPiece(App /*, { options } */);
 
   return {
     // Keep cssMount before piece.mount to prevent FOUC.
@@ -40,8 +53,7 @@ export function myMfeFactory() {
 ```
 
 `buildPiece()` is the public helper. It wraps a React component into a
-CollageJS `CorePiece` object and can be customized with lifecycle hooks and
-default props through its options argument.
+CollageJS `CorePiece` object and can be customized with lifecycle hooks and default props through its options argument.
 
 ### buildPiece() Options
 
@@ -72,10 +84,10 @@ Use the `Piece` component to mount any CollageJS `CorePiece` in a React app.
 
 ```tsx
 import { Piece, piece } from "@collagejs/react";
-import { myMfeFactory } from "@my/bare-module-specifier";
+import { myPieceFactory } from "@my/bare-module-specifier";
 
 export function Host() {
-  return <Piece {...piece(myMfeFactory())} extra="yes" data={true} />;
+  return <Piece {...piece(myPieceFactory())} extra="yes" data={true} />;
 }
 ```
 
@@ -96,9 +108,10 @@ Prefer memoizing the piece object:
 ```tsx
 import { useMemo } from "react";
 import { Piece, piece } from "@collagejs/react";
+import { myPieceFactory } from "@my/bare-module-specifier";
 
 export function Host() {
-  const corePiece = useMemo(() => myMfeFactory(), []);
+  const corePiece = useMemo(() => myPieceFactory(), []);
 
   return <Piece {...piece(corePiece)} extra="yes" data={true} />;
 }
@@ -114,16 +127,18 @@ Use the second argument of `piece()` to configure mounting behavior.
 
 ```tsx
 <Piece
-  {...piece(myMfeFactory(), {
+  {...piece(myPieceFactory(), {
     shadow: true,
     containerProps: { className: "host" },
   })}
 />
 ```
 
+> ⚠️ **IMPORTANT**:  While the development server is running, touching the values inside the `piece()` function will cause the page to reload.
+
 The options object accepts:
 
-1. `shadow`: `undefined`/`false` for light DOM, `true` for open shadow root, or `ShadowRootInit` for custom shadow options.
+1. `shadow`: See below.
 2. `containerProps`: props forwarded to the host `<div>` element.
 
 #### Shadow Mounting
@@ -134,10 +149,6 @@ The `shadow` option supports:
 2. `true`: mount in `attachShadow({ mode: "open" })`.
 3. `ShadowRootInit`: mount in a shadow root with custom options, including `mode: "closed"`.
 
-During local development with Vite HMR, if shadow mode changes after mount,
-`Piece` triggers a full page reload automatically. This preserves the
-single-use lifecycle policy while avoiding manual reloads.
-
 #### Host Container Styling
 
 The host `<div>` is intentionally unstyled by this package.
@@ -145,7 +156,7 @@ The host `<div>` is intentionally unstyled by this package.
 If you want host-level styling, pass it through `containerProps`, for example
 `containerProps.style` or `containerProps.className`.
 
-Each host `<div>` also includes a `data-cjs-piece-host` attribute:
+Each host `<div>` also includes a `data-cjs-piece-host` attribute with one of the following values:
 
 1. `dom` for light DOM mounts.
 2. `open` for open shadow-root mounts.
@@ -159,6 +170,16 @@ This is useful for global CSS selectors in host apps, for example:
 }
 ```
 
+Or where the attribute value doesn't matter:
+
+```css
+:where([data-cjs-piece-host]) {
+  display: contents;
+}
+```
+
+We recommend this display setting whenever possible to minimize the layout effects the DIV container may introduce.
+
 #### Host Container Events
 
 `containerProps` accepts any standard React `<div>` props, including event
@@ -169,16 +190,17 @@ Use bubbling events (for example `onClick`, `onKeyDown`, `onInput`) so events
 from descendants can reach the host container:
 
 ```tsx
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Piece, piece } from "@collagejs/react";
 
 export function Host() {
   const [lastEvent, setLastEvent] = useState("none");
+  const corePiece = useMemo(() => myPieceFactory(), []);
 
   return (
     <>
       <Piece
-        {...piece(myMfeFactory(), {
+        {...piece(corePiece, {
           containerProps: {
             onClick: () => setLastEvent("click"),
             onKeyDown: () => setLastEvent("keydown"),
@@ -192,7 +214,7 @@ export function Host() {
 ```
 
 This pattern works well for listening to interactions that bubble from content
-mounted inside the piece.
+mounted inside the piece.  A notable pair of useful, bubbling events:  `focusin` and `focusout`.  These can notify the host application whenever a *CollageJS* piece has received or lost keyboard focus.
 
 ## Lifecycle Policy (Single-Use)
 
@@ -207,7 +229,7 @@ If any of these rules are violated, the library throws explicit runtime errors.
 
 ## Parent-Aware Mounting and Context
 
-CollageJS supports parent-aware lifecycle management: when a parent piece unmounts, child pieces mounted through that parent-aware `mountPiece` are unmounted first.
+*CollageJS* supports parent-aware lifecycle management: When a parent piece unmounts, child pieces mounted through that parent-aware `mountPiece` function are unmounted first.
 
 This package supports that model by:
 
@@ -219,7 +241,7 @@ In most cases, this works automatically when both sides use `@collagejs/react` A
 
 ## IntelliSense for CorePiece Props
 
-You can get IntelliSense for props passed to `Piece` if your factory function return type is known.
+You can get IntelliSense for props passed to `Piece` if your factory function's return type is known.
 
 One approach is to declare the module in a `.d.ts` file:
 
@@ -227,22 +249,30 @@ One approach is to declare the module in a `.d.ts` file:
 import type { CorePiece } from "@collagejs/core";
 
 declare module "@my/bare-module-specifier" {
-  export function myMfeFactory(): CorePiece<{
+  export function myPieceFactory(): CorePiece<{
     extra: string;
     data: boolean;
   }>;
 }
 ```
 
-## TypeScript Declarations
-
-This package ships generated declaration files in `dist/`, including `dist/index.d.ts` with API JSDoc comments.
-
 ## Development
 
+When cloning this repository, install packages and Playwrite browsers:
+
 ```bash
-npm test
-npm run build
+npm install
+npx playwright install
 ```
 
-Tests run in Vitest Browser Mode (Playwright/Chromium).
+Tests are run with `vitest` in Browser Mode:
+
+```bash
+npm run test
+```
+
+### Test Projects
+
+There are 2 test projects under the `test-projects/` folder:  One creates a *CollageJS* piece using `buildPiece()`; the other one consumes pieces using the `Piece` component.
+
+Both projects are standard Vite + React projects with the corresponding Vite plug-ins installed according to their roles.
