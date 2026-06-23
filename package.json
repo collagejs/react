@@ -1,0 +1,56 @@
+{
+  "name": "@collagejs/react",
+  "version": "0.0.1",
+  "description": "React integration for the CollageJS micro-frontend library",
+  "keywords": [
+    "collagejs",
+    "react",
+    "micro-frontend",
+    "single-spa"
+  ],
+  "homepage": "https://github.com/collagejs/react#readme",
+  "bugs": {
+    "url": "https://github.com/collagejs/react/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/collagejs/react.git"
+  },
+  "license": "MIT",
+  "author": "José Pablo Ramírez Vargas",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "vitest run --browser.enabled",
+    "test:watch": "vitest --browser.enabled",
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build": "npm run clean && vite build && npm run build:types && publint"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/browser-playwright": "^4.1.9",
+    "publint": "^0.3.21",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.9"
+  },
+  "dependencies": {
+    "@collagejs/core": "^0.4.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  }
+}
