@@ -32,8 +32,9 @@
     "dist"
   ],
   "scripts": {
-    "test": "vitest run --browser.enabled",
-    "test:watch": "vitest --browser.enabled",
+    "test": "vitest run",
+    "test:cicd": "npx playwright install && npm run test",
+    "test:watch": "vitest",
     "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "build:types": "tsc -p tsconfig.build.json",
     "build": "npm run clean && vite build && npm run build:types && publint"
