@@ -50,8 +50,10 @@ function App() {
         <pre>I'm content inside a PRE element.<br />Second line.</pre>
       </div>
       <div>
-        <h1>Score Board Micro-Frontend</h1>
-        <ScoreBoardMfe />
+        <h1>Score Board Micro-Frontend 1</h1>
+        <ScoreBoardMfe shadow={false} team1={{name: 'México', score: 1}} team2={{name: 'Brasil', score: 2}} />
+        <h1>Score Board Micro-Frontend 2</h1>
+        <ScoreBoardMfe shadow={true} team1={{name: 'Argentina', score: 3}} team2={{name: 'Germany', score: 4}} />
       </div>
 
       <section id="next-steps">

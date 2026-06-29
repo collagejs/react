@@ -115,10 +115,17 @@ pre {
 }
 
 [data-cjs-piece-host] {
-  border: 0.2rem dashed magenta;
   color: red;
   font-size: xx-large;
   line-height: 1.1em;
   padding: 1rem;
   margin: 2rem;
+}
+
+[data-cjs-piece-host="dom"] {
+  border: 0.2rem dashed magenta;
+}
+
+[data-cjs-piece-host="open"], [data-cjs-piece-host="closed"] {
+  border: 0.2rem dashed rgba(84, 203, 203, 0.52);
 }

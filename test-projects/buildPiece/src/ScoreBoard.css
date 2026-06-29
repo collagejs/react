@@ -1,10 +1,11 @@
 .score-board {
-  border: 1px solid gray;
+  border: 1px solid navy;
   border-radius: 0.4rem;
   width: max-content;
   padding: 1rem;
   text-align: center;
-  background-color: #e0e0e0;
+  background-color: rgb(5, 5, 99);
+  color: lightgray;
 
   & .score-label {
     font-size: x-large;
@@ -27,9 +28,9 @@
         font-size: 1.5rem;
         font-weight: bold;
         padding: 1rem;
-        background-color: #f0f0f0;
+        background-color: rgb(22, 67, 127);
         border-radius: 0.4rem;
-        border: 1px solid gray;
+        border: 2px solid rgb(35, 65, 184);
         margin: 0 0.5rem;
       }
 
