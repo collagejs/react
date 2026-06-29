@@ -12,4 +12,4 @@ export {
 } from "./collageContext.js";
 export type { CollageContext } from "./collageContext.js";
 export type { ComponentOperationOptions } from "./collage.js";
-export type { PieceProps } from "./piece.js";
+export type * from "./piece.js";
