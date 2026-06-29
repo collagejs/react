@@ -9,6 +9,10 @@ This is the official React package for *CollageJS*. It is used for two complemen
 1. Create `CorePiece` objects from React components.
 2. Consume `CorePiece` objects (built with any framework or library) in React projects.
 
+> ⚠️ **AI-GENERATED**
+> 
+> This package's main functionality was mainly produced by Github Copilot.  Unit testing and test projects say this is working as expected, but if you encounter issues, have this in mind and if you have the expertise, have a look at the source code to help speed up any potential fixes.
+
 ## Installation
 
 As a first step, create your Vite + React project:
